@@ -1,0 +1,31 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+		 xmlns:b="http://www.springframework.org/schema/beans"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+<http auto-config="true">
+  
+  <!-- Allows you to forcibly log out your users
+     - using GET method instead of the default Spring Security POST logout
+     - https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html#csrf-logout
+  -->
+  <csrf disabled="true"/>
+  
+  <intercept-url pattern="/login" access="permitAll"/>
+  <intercept-url pattern="/res/**" access="permitAll"/>
+  <intercept-url pattern="/**" access="isFullyAuthenticated()"/>
+  
+</http>
+	
+	<user-service>
+	<!-- 
+	  - Spring 5 encodes passwords using BCrypt hashing by default.
+	  - Prefixing a plain text password with {noop}, no password encoder will be used.
+	 -->
+		<user name="admin" password="{noop}12345" authorities="ROLE_USER" />
+	</user-service>
+
+
+
+</b:beans>
