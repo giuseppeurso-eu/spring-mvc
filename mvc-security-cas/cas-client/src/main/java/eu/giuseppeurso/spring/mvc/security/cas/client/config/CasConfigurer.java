@@ -4,14 +4,11 @@ import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
-import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -33,9 +30,6 @@ public class CasConfigurer {
 
 	private static final Logger logger = LoggerFactory.getLogger(CasConfigurer.class);
 
-	@Autowired
-	private AuthenticationManager authMan;
-	
 	/**
 	 * The CAS global properties.
 	 * @return
@@ -104,48 +98,5 @@ public class CasConfigurer {
 		
 		return provider;
 	}
-
-	//	    @Bean
-	//	    public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
-	//	        CasAuthenticationFilter filter = new CasAuthenticationFilter();
-	//	        //filter.setAllowSessionCreation(true);
-	//	        
-	//	        //ProxyGrantingTicketStorageImpl pgt = new ProxyGrantingTicketStorageImpl();
-	//	        //filter.setProxyGrantingTicketStorage(pgt);
-	//	        
-	//	        //p:proxyReceptorUrl="/login/cas/proxyreceptor"
-	//	        //filter.setProxyReceptorUrl("/login/cas/proxyreceptor");	
-	//	       
-	//	        logger.info("Artifact Parameter: "+serviceProperties().getArtifactParameter());
-	//	        logger.info("Service: "+serviceProperties().getService());
-	//	        logger.info("Service Parameter: "+serviceProperties().getServiceParameter());
-	//	        
-	//	        filter.setServiceProperties(serviceProperties());
-	//	        //filter.setAllowSessionCreation(true);
-	//	        
-	//	        filter.setAuthenticationManager(authenticationManager);
-	//	        logger.info("Registered CAS Auth Filter: "+filter.getClass().getSimpleName());
-	//	        return filter;
-	//	    }
-	
-	
-	@Bean
-    public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
-        CasAuthenticationFilter filter = new CasAuthenticationFilter();
-        // session-fixation attacks
-        //filter.setAllowSessionCreation(true);
-        
-        //ProxyGrantingTicketStorageImpl pgt = new ProxyGrantingTicketStorageImpl();
-        //filter.setProxyGrantingTicketStorage(pgt);
-        
-        //p:proxyReceptorUrl="/login/cas/proxyreceptor"
-        //filter.setProxyReceptorUrl("/login/cas/proxyreceptor");	
-        
-        filter.setServiceProperties(serviceProperties());
-        //filter.setAllowSessionCreation(true);
-        filter.setAuthenticationManager(authMan);
-        logger.info("Registered CAS Filter: "+filter.getClass().getSimpleName());
-        return filter;
-    }
 
 }
