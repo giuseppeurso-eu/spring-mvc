@@ -1,0 +1,7 @@
+{
+  "@class" : "org.apereo.cas.services.RegexRegisteredService",
+  "serviceId" : "http://localhost:18080/mvc-casclient/login-cas",
+  "name" : "mvc_casclient",
+  "id" : 200,
+  "evaluationOrder" : 2
+}
