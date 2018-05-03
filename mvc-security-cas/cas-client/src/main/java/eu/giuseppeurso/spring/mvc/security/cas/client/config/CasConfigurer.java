@@ -1,5 +1,6 @@
 package eu.giuseppeurso.spring.mvc.security.cas.client.config;
 
+
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.slf4j.Logger;
@@ -7,11 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.cas.ServiceProperties;
+import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
+
+
 
 /**
  * This class aims to centralize all the configuration properties of the CAS Server.
@@ -91,12 +98,38 @@ public class CasConfigurer {
 		CasAuthenticationProvider provider = new CasAuthenticationProvider();
 		provider.setServiceProperties(serviceProperties());
 		provider.setTicketValidator(ticketValidatorCas30());
-		// CAS Auth Provider does not use the password for authentication here, but only loads
-		// the authorities for a user, once they have been authenticated by CAS. 
-		provider.setUserDetailsService((s) -> new User("fakeUser", "fakePass", true, true, true, true, AuthorityUtils.createAuthorityList("ROLE_USER")));
+		
+		// Loads only a default set of authorities for any authenticated users (username and password are)
+		//provider.setUserDetailsService((UserDetailsService) fakeUserDetailsService());
+		
+		// Loads additional user details using CasUserDetailsService (attribute resolution strategies need to be configured on the CAS Server)
+		provider.setAuthenticationUserDetailsService(casUserDetailsService());
+		
 		provider.setKey("CAS_PROVIDER_KEY_LOCALHOST");
 		
 		return provider;
 	}
+		
+	/**
+	 * A custom UserDetailsService to load additional user details once the ticket validation request has been processed.
+	 * 
+	 * @see https://apereo.github.io/2018/02/20/cas-service-rbac-attributeresolution/
+	 * @see https://apereo.github.io/cas/5.2.x/integration/Attribute-Resolution.html
+	 */
+	@Bean
+    public AuthenticationUserDetailsService<CasAssertionAuthenticationToken> casUserDetailsService() {
+        return new CasUserDetailsService();
+    }
 
+	/**
+	 * CAS Authentication Provider does not use credentials specified here for authentication. It only loads
+	 * the authorities for a user, once they have been authenticated by CAS.
+	 * 
+	 */
+	@Bean
+    public User fakeUserDetailsService(){
+        return new User("fakeUser", "fakePass", true, true, true, true, AuthorityUtils.createAuthorityList("ROLE_USER"));
+    }
+	
+	
 }

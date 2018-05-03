@@ -3,5 +3,10 @@
   "serviceId" : "http://localhost:18080/mvc-casclient/login-cas",
   "name" : "mvc_casclient",
   "id" : 200,
-  "evaluationOrder" : 2
+  "evaluationOrder" : 2,
+  "attributeReleasePolicy" : {
+    "@class" : "org.apereo.cas.services.ReturnAllowedAttributeReleasePolicy",
+    "allowedAttributes" : [ "java.util.ArrayList", ["givenName", "sn", "mail" ] ]
+  }
+  
 }

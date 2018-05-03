@@ -1,5 +1,9 @@
 package eu.giuseppeurso.spring.mvc.security.cas.client.controller;
 
+import java.security.Principal;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.giuseppeurso.spring.mvc.security.cas.client.config.CasUser;
+
 @Controller
 @RequestMapping("/")
 public class HomeController {
@@ -26,8 +32,16 @@ public class HomeController {
 		logger.info("Session-ID: "+request.getSession().getId());
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if(auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
-			UserDetails userDetails = (UserDetails) auth.getPrincipal();
+			logger.info("CAS Ticket: ["+auth.getCredentials()+"]");
+			CasUser userDetails = (CasUser) auth.getPrincipal();
 			logger.info("Logged user: ["+userDetails.getUsername()+"]");
+		
+			
+			Map<String, Object> userAttributes = userDetails.getAttributes();
+			for (Entry<String, Object> e : userAttributes.entrySet()) {
+				logger.info("User attribute "+e.getKey() + " = " + e.getValue() + " (" + e.getValue().getClass() + ")");
+	        }
+			
 		}else {
 			logger.warn("Unable to retrieve logged user from SecurityContextHolder.");
 		}
